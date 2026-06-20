@@ -1,47 +1,29 @@
-from datetime import timedelta
 import pytest
 from pytest_lazyfixture import lazy_fixture as lf
 
-from django.urls import reverse
 from django.conf import settings
-from django.utils import timezone
 
 from news.forms import CommentForm
-from news.models import Comment
 
-HOME_URL = reverse('news:home')
+pytestmark = pytest.mark.django_db
 
 
-@pytest.mark.django_db
-def test_news_count(client, many_news):
-    response = client.get(HOME_URL)
+def test_news_count(client, many_news, home_url):
+    response = client.get(home_url)
     object_list = response.context['object_list']
-    news_count = object_list.count()
-    assert news_count == settings.NEWS_COUNT_ON_HOME_PAGE
+    assert object_list.count() == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
-@pytest.mark.django_db
-def test_news_order(client, many_news):
-    response = client.get(HOME_URL)
+def test_news_order(client, many_news, home_url):
+    response = client.get(home_url)
     object_list = response.context['object_list']
     all_dates = [news.date for news in object_list]
     sorted_dates = sorted(all_dates, reverse=True)
     assert all_dates == sorted_dates
 
 
-@pytest.mark.django_db
-def test_comments_order(client, news, author, news_id_for_args):
-    today = timezone.now()
-    for idx in range(10):
-        comment = Comment.objects.create(
-            news=news,
-            author=author,
-            text=f'text_{idx}',
-        )
-        comment.created = today + timedelta(days=idx)
-        comment.save()
-    url = reverse('news:detail', args=news_id_for_args)
-    response = client.get(url)
+def test_comments_order(client, detail_url, comments_for_news):
+    response = client.get(detail_url)
     assert 'news' in response.context
     news_obj = response.context['news']
     all_comments = news_obj.comment_set.all()
@@ -50,7 +32,6 @@ def test_comments_order(client, news, author, news_id_for_args):
     assert all_timestamps == sorted_timestamps
 
 
-@pytest.mark.django_db
 @pytest.mark.parametrize(
     'parametrized_client, form_visible',
     (
@@ -61,10 +42,9 @@ def test_comments_order(client, news, author, news_id_for_args):
 def test_comment_form_visible(
     parametrized_client,
     form_visible,
-    news_id_for_args,
+    detail_url,
 ):
-    url = reverse('news:detail', args=news_id_for_args)
-    response = parametrized_client.get(url)
+    response = parametrized_client.get(detail_url)
     assert ('form' in response.context) is form_visible
     if form_visible:
         assert isinstance(response.context['form'], CommentForm)

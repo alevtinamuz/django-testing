@@ -51,21 +51,6 @@ def comment(news, author):
 
 
 @pytest.fixture
-def news_id_for_args(news):
-    return (news.id,)
-
-
-@pytest.fixture
-def comment_id_for_args(comment):
-    return (comment.id,)
-
-
-@pytest.fixture
-def form_data():
-    return {'text': 'new text comment'}
-
-
-@pytest.fixture
 def many_news():
     today = timezone.now()
     News.objects.bulk_create(
@@ -79,10 +64,56 @@ def many_news():
 
 
 @pytest.fixture
-def detail_url(news, news_id_for_args):
-    return reverse('news:detail', args=news_id_for_args)
+def comments_for_news(news, author):
+    today = timezone.now()
+    comments = []
+    for idx in range(10):
+        comment = Comment.objects.create(
+            news=news,
+            author=author,
+            text=f'text_{idx}',
+        )
+        comment.created = today + timedelta(days=idx)
+        comment.save()
+        comments.append(comment)
+    return comments
+
+
+@pytest.fixture
+def detail_url(news):
+    return reverse('news:detail', args=(news.id,))
 
 
 @pytest.fixture
 def url_to_comments(detail_url):
     return detail_url + '#comments'
+
+
+@pytest.fixture
+def home_url():
+    return reverse('news:home')
+
+
+@pytest.fixture
+def login_url():
+    return reverse('users:login')
+
+
+@pytest.fixture
+def logout_url():
+    return reverse('users:logout')
+
+
+@pytest.fixture
+def signup_url():
+    return reverse('users:signup')
+
+
+@pytest.fixture
+def edit_url(comment):
+    return reverse('news:edit', args=(comment.id,))
+
+
+@pytest.fixture
+def delete_url(comment):
+    return reverse('news:delete', args=(comment.id,))
