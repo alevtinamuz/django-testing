@@ -38,7 +38,7 @@
 - Python 3.12.7
 - Django 5.1.1
 - pytest, pytest-django, pytest-lazy-fixture, pytest-subtests
-- pytils — транслитерация для генерации `slug` в YaNote
+- pytils - транслитерация для генерации `slug` в YaNote
 - flake8, flake8-docstrings, pep8-naming - проверка стиля кода
 
 ## Как запустить
@@ -46,7 +46,7 @@
 Клонировать репозиторий и перейти в него в командной строке:
 
 ```bash
-git clone https://github.com/<ваш-логин>/django-testing.git
+git clone https://github.com/alevtinamuz/django-testing.git
 cd django-testing
 ```
 
@@ -74,10 +74,10 @@ bash run_tests.sh
 ```
 
 Скрипт последовательно выполняет:
-1. `flake8` — проверку кода на соответствие PEP8;
-2. `structure_test.py` — проверку структуры репозитория на соответствие ожидаемой;
-3. `pytest` в `ya_news/` — тесты новостного сервиса;
-4. `pytest` в `ya_note/` — тесты сервиса заметок.
+1. `flake8` - проверку кода на соответствие PEP8;
+2. `structure_test.py` - проверку структуры репозитория на соответствие ожидаемой;
+3. `pytest` в `ya_news/` - тесты новостного сервиса;
+4. `pytest` в `ya_note/` - тесты сервиса заметок.
 
 Если нужно запустить тесты только одного проекта:
 
